@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+    --bg-deep: #060c1a;
+    --bg-mid: #0d1d36;
+    --surface: rgb(12 21 42 / 72%);
+    --surface-border: rgb(151 219 255 / 26%);
+    --text-main: #e9f6ff;
+    --text-muted: #9bb8d0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text-main);
+    font-family: "Space Grotesk", "Segoe UI", sans-serif;
+    background:
+        radial-gradient(circle at 14% 12%, rgb(0 178 227 / 27%), transparent 40%),
+        radial-gradient(circle at 86% 20%, rgb(59 130 246 / 22%), transparent 34%),
+        linear-gradient(140deg, var(--bg-deep), #0a1225 44%, var(--bg-mid));
+    background-attachment: fixed;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.2;
+    background:
+        radial-gradient(circle at 24% 80%, rgb(53 208 255 / 38%), transparent 36%),
+        radial-gradient(circle at 78% 64%, rgb(12 74 110 / 40%), transparent 36%);
+    z-index: -1;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+.text-display {
+    font-family: "Syne", "Space Grotesk", sans-serif;
+    letter-spacing: 0.03em;
+}
+
+.glass-panel {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    backdrop-filter: blur(14px);
+}
+
+.grid-lines {
+    background-image:
+        linear-gradient(to right, rgb(173 216 230 / 8%) 1px, transparent 1px),
+        linear-gradient(to bottom, rgb(173 216 230 / 7%) 1px, transparent 1px);
+    background-size: 36px 36px;
+}
