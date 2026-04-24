@@ -7,7 +7,7 @@ import { useGLBScene } from '../hooks/useGLBScene'
 import { ROUTES } from '../router/paths'
 import metnumModelUrl from '../assets/METNUM.glb?url'
 
-const HUD_TIMER_INITIAL_SECONDS = 5 * 60
+const HUD_TIMER_INITIAL_SECONDS = 3 * 60
 
 const ZONE_MODULE_MAP: Record<string, string> = {
     // IMPORTANTE: Ajusta estas llaves a los nombres reales de los meshes en tu archivo GLB
@@ -15,49 +15,8 @@ const ZONE_MODULE_MAP: Record<string, string> = {
     'MODULO2': 'q2',
     'MODULO3': 'q3',
     'MODULO4': 'q4',
-}
-
-const QUESTIONS: Record<string, { text: string; options: string[]; correctIndex: number }> = {
-    q1: {
-        text: '¿Cuál es el propósito principal de los métodos numéricos?',
-        options: [
-            'Resolver problemas matemáticos exactos',
-            'Encontrar aproximaciones a problemas matemáticos complejos',
-            'Programar sistemas operativos',
-            'Diseñar interfaces de usuario'
-        ],
-        correctIndex: 1,
-    },
-    q2: {
-        text: '¿Qué es el error de truncamiento?',
-        options: [
-            'El error causado por representar números en coma flotante',
-            'El error de usar fórmulas simplificadas en lugar de exactas',
-            'El error provocado por el hardware',
-            'Un error de sintaxis en el código'
-        ],
-        correctIndex: 1,
-    },
-    q3: {
-        text: '¿Cúal es una característica del método de bisección?',
-        options: [
-            'Es un método abierto',
-            'Siempre converge si la función cambia de signo en el intervalo',
-            'Es el método más rápido',
-            'Requiere el cálculo de la derivada'
-        ],
-        correctIndex: 1,
-    },
-    q4: {
-        text: '¿Qué método usa derivadas para encontrar raíces reales?',
-        options: [
-            'Método de Newton-Raphson',
-            'Método de la regla falsa',
-            'Método de la secante',
-            'Método de Bairstow'
-        ],
-        correctIndex: 0,
-    },
+    'MODULO5': 'q5',
+    'MODULO6': 'q6',
 }
 
 export default function GameScenePage() {
@@ -69,6 +28,8 @@ export default function GameScenePage() {
         q2: false,
         q3: false,
         q4: false,
+        q5: false,
+        q6: false,
     })
     const [selectedAnswer, setSelectedAnswer] = useState<{ index: number, isCorrect: boolean } | null>(null)
 
@@ -168,7 +129,10 @@ export default function GameScenePage() {
             console.error('Audio api fallback', e)
         }
 
-        const question = QUESTIONS[activeModuleId]
+        const levelQuestions = level?.questions || {}
+        const question = levelQuestions[activeModuleId]
+        if (!question) return
+        
         const isCorrect = optionIndex === question.correctIndex
 
         setSelectedAnswer({ index: optionIndex, isCorrect })
@@ -188,7 +152,8 @@ export default function GameScenePage() {
         return <Navigate to={ROUTES.levelSelect} replace />
     }
 
-    const activeQuestion = activeModuleId ? QUESTIONS[activeModuleId] : null
+    const levelQuestions = level.questions || {}
+    const activeQuestion = activeModuleId ? levelQuestions[activeModuleId] : null
 
     const CABLE_COLORS = [
         { name: 'Rojo', from: 'from-red-600', to: 'to-red-700', border: 'border-red-900', bg: 'bg-red-500' },
