@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useMemo, useState } from 'react'
-import { Navigate, useParams } from 'react-router-dom'
+import { useEffect, useMemo, useState, useRef } from 'react'
+import { Navigate, useParams, Link } from 'react-router-dom'
 import PageTransition from '../components/ui/PageTransition'
 import { LEVELS } from '../data/levels'
 import { useGLBScene } from '../hooks/useGLBScene'
@@ -93,8 +93,50 @@ export default function GameScenePage() {
         setRemainingSeconds(HUD_TIMER_INITIAL_SECONDS)
     }, [levelId])
 
+    const isVictory = Object.values(moduleStatus).length > 0 && Object.values(moduleStatus).every((v) => v === true)
+    const isGameOver = remainingSeconds <= 0 && !isVictory
+
+    const backgroundAudioRef = useRef<HTMLAudioElement | null>(null)
+    const explosionAudioRef = useRef<HTMLAudioElement | null>(null)
+    const victoryAudioRef = useRef<HTMLAudioElement | null>(null)
+
     useEffect(() => {
-        if (remainingSeconds <= 0) return undefined
+        backgroundAudioRef.current = new Audio('/loop.mp3')
+        backgroundAudioRef.current.loop = true
+        backgroundAudioRef.current.volume = 0.3
+
+        explosionAudioRef.current = new Audio('/explosion.mp3')
+        explosionAudioRef.current.volume = 0.8
+
+        victoryAudioRef.current = new Audio('/victory.mp3')
+        victoryAudioRef.current.volume = 0.8
+
+        return () => {
+            if (backgroundAudioRef.current) backgroundAudioRef.current.pause()
+            if (explosionAudioRef.current) explosionAudioRef.current.pause()
+            if (victoryAudioRef.current) victoryAudioRef.current.pause()
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!backgroundAudioRef.current || !explosionAudioRef.current || !victoryAudioRef.current) return
+
+        if (isVictory) {
+            backgroundAudioRef.current.pause()
+            const promise = victoryAudioRef.current.play()
+            if (promise !== undefined) promise.catch(() => console.log('Falta interacción para el audio de victoria'))
+        } else if (isGameOver) {
+            backgroundAudioRef.current.pause()
+            const promise = explosionAudioRef.current.play()
+            if (promise !== undefined) promise.catch(() => console.log('Falta interacción para el audio de explosión'))
+        } else {
+            const promise = backgroundAudioRef.current.play()
+            if (promise !== undefined) promise.catch(() => console.log('Falta interacción inicial para bucle musical'))
+        }
+    }, [isVictory, isGameOver])
+
+    useEffect(() => {
+        if (remainingSeconds <= 0 || isVictory) return undefined
 
         const intervalId = window.setInterval(() => {
             setRemainingSeconds((prevSeconds) => (prevSeconds <= 1 ? 0 : prevSeconds - 1))
@@ -103,7 +145,7 @@ export default function GameScenePage() {
         return () => {
             window.clearInterval(intervalId)
         }
-    }, [remainingSeconds])
+    }, [remainingSeconds, isVictory])
 
     const timerLabel = useMemo(() => {
         const minutes = Math.floor(remainingSeconds / 60)
@@ -113,7 +155,7 @@ export default function GameScenePage() {
 
     const handleAnswerClick = (optionIndex: number) => {
         if (!activeModuleId || selectedAnswer !== null) return
-        
+
         // Reproducir sonido
         try {
             const cutSound = new Audio('/cut.mp3')
@@ -125,12 +167,12 @@ export default function GameScenePage() {
         } catch (e) {
             console.error('Audio api fallback', e)
         }
-        
+
         const question = QUESTIONS[activeModuleId]
         const isCorrect = optionIndex === question.correctIndex
-        
+
         setSelectedAnswer({ index: optionIndex, isCorrect })
-        
+
         setTimeout(() => {
             if (isCorrect) {
                 setModuleStatus((prev) => ({ ...prev, [activeModuleId]: true }))
@@ -157,6 +199,34 @@ export default function GameScenePage() {
 
     return (
         <PageTransition className="h-svh overflow-hidden p-5">
+            {/* Pantallas de Fin de Juego */}
+            <AnimatePresence>
+                {isGameOver && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-rose-950/95 text-white backdrop-blur-xl"
+                        initial={{ opacity: 0, scale: 1.1 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                    >
+                        <h1 className="text-display text-7xl font-bold mb-4 text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.8)] animate-pulse">¡KA-BOOM!</h1>
+                        <p className="text-2xl mb-12 text-rose-200">La bomba ha explotado.</p>
+                        <Link to={ROUTES.levelSelect} className="rounded-xl border-2 border-rose-600 bg-rose-800 px-8 py-4 text-xl font-bold text-white transition hover:bg-rose-700 hover:scale-105">Volver al menú</Link>
+                    </motion.div>
+                )}
+                {isVictory && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-emerald-950/95 text-white backdrop-blur-xl"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                    >
+                        <h1 className="text-display text-6xl font-bold mb-4 text-emerald-400 drop-shadow-[0_0_20px_rgba(52,211,153,0.5)]">¡BOMBA DESACTIVADA!</h1>
+                        <p className="text-2xl mb-12 text-emerald-100">Sobreviviste con {timerLabel} restantes en el reloj.</p>
+                        <Link to={ROUTES.levelSelect} className="rounded-xl border-2 border-emerald-600 bg-emerald-800 px-8 py-4 text-xl font-bold text-white transition hover:bg-emerald-700 hover:scale-105">Volver al Menú Principal</Link>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <section
                 className="grid h-[calc(100svh-2.5rem)] min-h-0 gap-5 grid-cols-[minmax(0,2fr)_minmax(240px,1fr)] relative select-none"
                 onContextMenu={(e) => e.preventDefault()}
@@ -216,7 +286,7 @@ export default function GameScenePage() {
                                         {activeQuestion.options.map((option, index) => {
                                             const color = CABLE_COLORS[index % CABLE_COLORS.length]
                                             const isSelected = selectedAnswer?.index === index
-                                            
+
                                             // Visual feedback de estado
                                             let cableVisual = `bg-linear-to-b ${color.from} ${color.to} ${color.border}`
                                             if (selectedAnswer !== null) {
@@ -246,7 +316,7 @@ export default function GameScenePage() {
                                             )
                                         })}
                                     </div>
-                                    
+
                                     {selectedAnswer !== null && (
                                         <div className={`mt-6 rounded-lg p-3 text-center font-bold animate-pulse ${selectedAnswer.isCorrect ? 'bg-green-950/50 text-green-400' : 'bg-red-950/50 text-red-400'}`}>
                                             {selectedAnswer.isCorrect ? '✓ ¡Cable correcto! Módulo desactivado.' : '✗ ¡Cable incorrecto! -30 segundos de penalización.'}
@@ -268,7 +338,12 @@ export default function GameScenePage() {
                 </motion.div>
 
                 <aside className="glass-panel flex h-full min-h-0 flex-col rounded-3xl p-5">
-                    <p className="text-sm uppercase tracking-[0.2em] text-cyan-200/80">Escena del juego</p>
+                    <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-200/80">Escena del juego</p>
+                        <Link to={ROUTES.levelSelect} className="rounded-lg border border-rose-400/30 bg-rose-950/40 px-3 py-1.5 text-xs text-rose-200 transition-colors hover:bg-rose-900/60" title="Abandonar partida">
+                            Salir
+                        </Link>
+                    </div>
                     <h2 className="text-display mt-2 text-2xl font-semibold text-white">{level.name}</h2>
                     <p className="mt-3 text-sm text-slate-300">{level.description}</p>
 
