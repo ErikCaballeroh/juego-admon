@@ -70,11 +70,13 @@ export default function GameScenePage() {
         q3: false,
         q4: false,
     })
+    const [selectedAnswer, setSelectedAnswer] = useState<{ index: number, isCorrect: boolean } | null>(null)
 
     const handleZoneClick = (moduleId: string) => {
         // No abrir si ya fue resuelto
         if (moduleStatus[moduleId]) return
         setActiveModuleId(moduleId)
+        setSelectedAnswer(null) // Reset al abrir
     }
 
     const { mountRef, loading, error, resetRotation } = useGLBScene({
@@ -110,17 +112,34 @@ export default function GameScenePage() {
     }, [remainingSeconds])
 
     const handleAnswerClick = (optionIndex: number) => {
-        if (!activeModuleId) return
-
-        const question = QUESTIONS[activeModuleId]
-        if (optionIndex === question.correctIndex) {
-            setModuleStatus((prev) => ({ ...prev, [activeModuleId]: true }))
-            setActiveModuleId(null)
-        } else {
-            // Si la respuesta es incorrecta, se puede agregar un efecto de temblor o restar tiempo
-            setRemainingSeconds((prev) => Math.max(0, prev - 30)) // Restar 30s por penalización
-            setActiveModuleId(null)
+        if (!activeModuleId || selectedAnswer !== null) return
+        
+        // Reproducir sonido
+        try {
+            const cutSound = new Audio('/cut.mp3')
+            cutSound.volume = 0.6
+            const playPromise = cutSound.play()
+            if (playPromise !== undefined) {
+                playPromise.catch(() => console.log('El audio requirió interacción previa o no se encontró'))
+            }
+        } catch (e) {
+            console.error('Audio api fallback', e)
         }
+        
+        const question = QUESTIONS[activeModuleId]
+        const isCorrect = optionIndex === question.correctIndex
+        
+        setSelectedAnswer({ index: optionIndex, isCorrect })
+        
+        setTimeout(() => {
+            if (isCorrect) {
+                setModuleStatus((prev) => ({ ...prev, [activeModuleId]: true }))
+            } else {
+                setRemainingSeconds((prev) => Math.max(0, prev - 30))
+            }
+            setActiveModuleId(null)
+            setSelectedAnswer(null)
+        }, 1500)
     }
 
     if (!level) {
@@ -196,16 +215,29 @@ export default function GameScenePage() {
                                     <div className="flex flex-col gap-4">
                                         {activeQuestion.options.map((option, index) => {
                                             const color = CABLE_COLORS[index % CABLE_COLORS.length]
+                                            const isSelected = selectedAnswer?.index === index
+                                            
+                                            // Visual feedback de estado
+                                            let cableVisual = `bg-linear-to-b ${color.from} ${color.to} ${color.border}`
+                                            if (selectedAnswer !== null) {
+                                                if (isSelected) {
+                                                    cableVisual = selectedAnswer.isCorrect ? 'bg-green-500 border-green-700' : 'bg-red-600 border-red-800'
+                                                } else {
+                                                    cableVisual = 'bg-slate-700 border-slate-800 opacity-50 grayscale'
+                                                }
+                                            }
+
                                             return (
                                                 <div key={index} className="flex items-center gap-4 rounded-xl border border-slate-700 bg-slate-800/40 p-3 shadow-inner">
                                                     <button
                                                         onClick={() => handleAnswerClick(index)}
-                                                        className={`group relative h-8 w-40 shrink-0 overflow-hidden rounded-md border-b-4 border-r-2 shadow-md transition-transform hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-95 bg-linear-to-b ${color.from} ${color.to} ${color.border}`}
-                                                        style={{ cursor: "url(/pinzas.png) 64 0, pointer" }}
+                                                        disabled={selectedAnswer !== null}
+                                                        className={`group relative h-8 w-40 shrink-0 overflow-hidden rounded-md border-b-4 border-r-2 shadow-md transition-transform ${selectedAnswer !== null ? '' : 'hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-95'} ${cableVisual}`}
+                                                        style={{ cursor: selectedAnswer !== null ? 'default' : "url(/pinzas.png) 64 0, pointer" }}
                                                         title={`Cortar cable ${color.name}`}
                                                     >
                                                         {/* Línea de "corte" en medio del cable */}
-                                                        <div className="absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 bg-black/30 transition-all group-hover:w-1 group-hover:bg-white/40" />
+                                                        <div className={`absolute inset-y-0 left-1/2 -translate-x-1/2 transition-all duration-300 ${isSelected ? 'w-2 bg-black/80' : 'w-0.5 bg-black/30 group-hover:w-1 group-hover:bg-white/40'}`} />
                                                         {/* Reflejo estilo cilíndrico */}
                                                         <div className="absolute inset-x-0 top-0 h-1/3 bg-white/20" />
                                                     </button>
@@ -214,9 +246,17 @@ export default function GameScenePage() {
                                             )
                                         })}
                                     </div>
+                                    
+                                    {selectedAnswer !== null && (
+                                        <div className={`mt-6 rounded-lg p-3 text-center font-bold animate-pulse ${selectedAnswer.isCorrect ? 'bg-green-950/50 text-green-400' : 'bg-red-950/50 text-red-400'}`}>
+                                            {selectedAnswer.isCorrect ? '✓ ¡Cable correcto! Módulo desactivado.' : '✗ ¡Cable incorrecto! -30 segundos de penalización.'}
+                                        </div>
+                                    )}
+
                                     <button
-                                        onClick={() => setActiveModuleId(null)}
-                                        className="mt-6 w-full rounded-xl bg-slate-800 py-3 text-sm font-semibold text-slate-400 transition hover:bg-slate-700 hover:text-white"
+                                        onClick={() => { setActiveModuleId(null); setSelectedAnswer(null); }}
+                                        disabled={selectedAnswer !== null}
+                                        className={`mt-6 w-full rounded-xl bg-slate-800 py-3 text-sm font-semibold text-slate-400 transition hover:bg-slate-700 hover:text-white ${selectedAnswer !== null ? 'opacity-50 cursor-not-allowed hidden' : ''}`}
                                     >
                                         Cancelar
                                     </button>
