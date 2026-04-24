@@ -138,7 +138,7 @@ export default function GameScenePage() {
 
     return (
         <PageTransition className="h-svh overflow-hidden p-5">
-            <section 
+            <section
                 className="grid h-[calc(100svh-2.5rem)] min-h-0 gap-5 grid-cols-[minmax(0,2fr)_minmax(240px,1fr)] relative select-none"
                 onContextMenu={(e) => e.preventDefault()}
             >
@@ -181,6 +181,7 @@ export default function GameScenePage() {
                         {activeQuestion && (
                             <motion.div
                                 className="absolute inset-0 z-30 flex items-center justify-center bg-slate-950/70 p-6 backdrop-blur-sm"
+                                style={{ cursor: "url(/pinzas.png) 64 0, crosshair" }}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
@@ -199,7 +200,8 @@ export default function GameScenePage() {
                                                 <div key={index} className="flex items-center gap-4 rounded-xl border border-slate-700 bg-slate-800/40 p-3 shadow-inner">
                                                     <button
                                                         onClick={() => handleAnswerClick(index)}
-                                                        className={`group relative h-6 w-20 overflow-hidden rounded-md border-b-4 border-r-2 shadow-md transition-transform hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-95 bg-linear-to-b ${color.from} ${color.to} ${color.border}`}
+                                                        className={`group relative h-8 w-40 shrink-0 overflow-hidden rounded-md border-b-4 border-r-2 shadow-md transition-transform hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-95 bg-linear-to-b ${color.from} ${color.to} ${color.border}`}
+                                                        style={{ cursor: "url(/pinzas.png) 64 0, pointer" }}
                                                         title={`Cortar cable ${color.name}`}
                                                     >
                                                         {/* Línea de "corte" en medio del cable */}
