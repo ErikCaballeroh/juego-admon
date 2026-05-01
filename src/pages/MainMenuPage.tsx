@@ -31,6 +31,14 @@ function SettingsIcon() {
     )
 }
 
+function StudyIcon() {
+    return (
+        <svg viewBox="0 0 24 24" className="h-9 w-9 md:h-12 md:w-12" fill="currentColor" aria-hidden="true">
+            <path d="M3 6.5C3 5.7 3.7 5 4.5 5h15c.8 0 1.5.7 1.5 1.5v11c0 .8-.7 1.5-1.5 1.5h-15A1.5 1.5 0 013 17.5v-11zM5 8v8h14V8H5zm2 2h10v2H7v-2z" />
+        </svg>
+    )
+}
+
 export default function MainMenuPage() {
     return (
         <PageTransition className="min-h-screen">
@@ -39,7 +47,7 @@ export default function MainMenuPage() {
 
                 <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center gap-12 text-center md:gap-16">
                     <h2 className="text-display whitespace-nowrap text-[clamp(2.2rem,9vw,7.8rem)] leading-none font-bold text-white drop-shadow-[0_8px_0_rgba(7,89,133,0.75)]">
-                        Desactivacion Critica
+                        Desactivación Crítica
                     </h2>
 
                     <div className="flex w-full items-center justify-center gap-5 md:gap-10">
@@ -61,6 +69,17 @@ export default function MainMenuPage() {
                             >
                                 <PlayIcon />
                                 JUGAR
+                            </Link>
+                        </motion.div>
+
+                        <motion.div whileHover={{ y: -6, scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                            <Link
+                                to={ROUTES.studyGuide}
+                                className="inline-flex h-28 min-w-52 items-center justify-center gap-4 rounded-3xl border-2 border-cyan-100/70 bg-teal-300 px-6 text-xl font-bold text-slate-950 shadow-[0_10px_0_rgba(6,95,70,0.75)] transition hover:bg-teal-200 md:h-36 md:min-w-72 md:text-2xl"
+                                aria-label="Ir a guía de estudio"
+                            >
+                                <StudyIcon />
+                                GUÍA
                             </Link>
                         </motion.div>
 
