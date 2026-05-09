@@ -4,7 +4,7 @@ import { ROUTES } from '../router/paths'
 
 export default function ProfilePage() {
     return (
-        <PageTransition className='p-5'>
+        <PageTransition className="p-5">
             <section className="glass-panel rounded-3xl p-8 md:p-10">
                 <div className="flex items-start justify-between">
                     <div className="flex-1">
