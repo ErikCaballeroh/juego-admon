@@ -20,17 +20,6 @@ function PlayIcon() {
     )
 }
 
-function SettingsIcon() {
-    return (
-        <svg viewBox="0 0 24 24" className="h-9 w-9 md:h-12 md:w-12" fill="currentColor" aria-hidden="true">
-            <path
-                d="M19.14 12.94a7.43 7.43 0 00.05-.94 7.43 7.43 0 00-.05-.94l2.11-1.65a.48.48 0 00.11-.61l-2-3.46a.5.5 0 00-.6-.22l-2.49 1a7.28 7.28 0 00-1.63-.94l-.38-2.65A.49.49 0 0013.77 2h-3.54a.49.49 0 00-.49.42l-.38 2.65a7.28 7.28 0 00-1.63.94l-2.49-1a.5.5 0 00-.6.22l-2 3.46a.48.48 0 00.11.61l2.11 1.65a7.43 7.43 0 00-.05.94 7.43 7.43 0 00.05.94l-2.11 1.65a.48.48 0 00-.11.61l2 3.46a.5.5 0 00.6.22l2.49-1a7.28 7.28 0 001.63.94l.38 2.65a.49.49 0 00.49.42h3.54a.49.49 0 00.49-.42l.38-2.65a7.28 7.28 0 001.63-.94l2.49 1a.5.5 0 00.6-.22l2-3.46a.48.48 0 00-.11-.61z"
-            />
-            <circle cx="12" cy="12" r="3.1" fill="rgb(125 211 252)" />
-        </svg>
-    )
-}
-
 function StudyIcon() {
     return (
         <svg viewBox="0 0 24 24" className="h-9 w-9 md:h-12 md:w-12" fill="currentColor" aria-hidden="true">
@@ -80,16 +69,6 @@ export default function MainMenuPage() {
                             >
                                 <StudyIcon />
                                 GUÍA
-                            </Link>
-                        </motion.div>
-
-                        <motion.div whileHover={{ y: -5 }} whileTap={{ scale: 0.97 }}>
-                            <Link
-                                to={ROUTES.settings}
-                                className="inline-flex h-24 w-24 items-center justify-center rounded-2xl border-2 border-cyan-100/70 bg-sky-300 p-2 text-slate-950 shadow-[0_8px_0_rgba(3,105,161,0.7)] transition hover:bg-sky-200 md:h-30 md:w-30"
-                                aria-label="Ir a configuracion"
-                            >
-                                <SettingsIcon />
                             </Link>
                         </motion.div>
                     </div>

@@ -10,7 +10,6 @@ import metnumModelUrl from '../assets/METNUM.glb?url'
 const HUD_TIMER_INITIAL_SECONDS = 3 * 60
 
 const ZONE_MODULE_MAP: Record<string, string> = {
-    // IMPORTANTE: Ajusta estas llaves a los nombres reales de los meshes en tu archivo GLB
     'MODULO1': 'q1',
     'MODULO2': 'q2',
     'MODULO3': 'q3',
@@ -85,14 +84,14 @@ export default function GameScenePage() {
         if (isVictory) {
             backgroundAudioRef.current.pause()
             const promise = victoryAudioRef.current.play()
-            if (promise !== undefined) promise.catch(() => console.log('Falta interacción para el audio de victoria'))
+            if (promise !== undefined) promise.catch(() => { })
         } else if (isGameOver) {
             backgroundAudioRef.current.pause()
             const promise = explosionAudioRef.current.play()
-            if (promise !== undefined) promise.catch(() => console.log('Falta interacción para el audio de explosión'))
+            if (promise !== undefined) promise.catch(() => { })
         } else {
             const promise = backgroundAudioRef.current.play()
-            if (promise !== undefined) promise.catch(() => console.log('Falta interacción inicial para bucle musical'))
+            if (promise !== undefined) promise.catch(() => { })
         }
     }, [isVictory, isGameOver])
 
@@ -123,16 +122,16 @@ export default function GameScenePage() {
             cutSound.volume = 0.6
             const playPromise = cutSound.play()
             if (playPromise !== undefined) {
-                playPromise.catch(() => console.log('El audio requirió interacción previa o no se encontró'))
+                playPromise.catch(() => { })
             }
         } catch (e) {
-            console.error('Audio api fallback', e)
+            // Silent catch for audio playback errors
         }
 
         const levelQuestions = level?.questions || {}
         const question = levelQuestions[activeModuleId]
         if (!question) return
-        
+
         const isCorrect = optionIndex === question.correctIndex
 
         setSelectedAnswer({ index: optionIndex, isCorrect })
@@ -324,7 +323,6 @@ export default function GameScenePage() {
                         </div>
                         <p>Tiempo objetivo: {level.estimatedMinutes} min</p>
                         <p>Dificultad: {level.difficulty}</p>
-                        <p>Estado: En desarrollo</p>
                         <p>Módulos desactivados: {Object.values(moduleStatus).filter(Boolean).length} / {Object.keys(moduleStatus).length}</p>
                     </div>
 

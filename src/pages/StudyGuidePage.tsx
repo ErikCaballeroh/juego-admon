@@ -4,6 +4,12 @@ import PageTransition from '../components/ui/PageTransition'
 import { LEVELS } from '../data/levels'
 import { buildGameScenePath, ROUTES } from '../router/paths'
 
+const RECURSOS_PDF = [
+    { nombre: 'PMBOOK Guide', archivo: '/guides/PMBOK_Guide5th_Spanish.pdf' },
+    { nombre: 'Estimacion y plannig SCRUM', archivo: '/guides/Estimacion-y-planning-SCRUM.pdf' },
+    { nombre: 'SCRUM y xp desde las trincheras', archivo: '/guides/scrum-y-xp-desde-las-trincheras.pdf' },
+]
+
 export default function StudyGuidePage() {
     const [expandedLevel, setExpandedLevel] = useState<string | null>(null)
 
@@ -15,10 +21,30 @@ export default function StudyGuidePage() {
                         <h1 className="text-4xl font-bold">Guía de Estudio Completa</h1>
                         <p className="mt-2 text-slate-400">Domina todos los conceptos antes de enfrentarte a cada misión</p>
                     </div>
-                    <Link to={ROUTES.levelSelect} className="rounded-md bg-sky-600 px-4 py-2 text-sm font-medium hover:bg-sky-700">
-                        Volver a Niveles
-                    </Link>
+                    <div className="flex gap-2">
+                        <Link to={ROUTES.mainMenu} className="rounded-md border border-slate-600 px-4 py-2 text-sm font-medium hover:bg-slate-700">
+                            ← Atrás
+                        </Link>
+                    </div>
                 </header>
+
+                <section className="mb-8 rounded-xl border border-slate-700/40 bg-slate-800/30 p-6">
+                    <h2 className="mb-4 text-2xl font-bold text-white">Recursos Descargables</h2>
+                    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                        {RECURSOS_PDF.map((recurso, idx) => (
+                            <a
+                                key={idx}
+                                href={recurso.archivo}
+                                download
+                                className="flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-950/30 px-4 py-3 text-sm text-cyan-300 transition hover:bg-cyan-950/50 hover:border-cyan-500/50"
+                            >
+                                <span>📄</span>
+                                <span>{recurso.nombre}</span>
+                                <span className="ml-auto text-xs">↓</span>
+                            </a>
+                        ))}
+                    </div>
+                </section>
 
                 <div className="space-y-6">
                     {LEVELS.map((lvl) => (
@@ -73,8 +99,8 @@ export default function StudyGuidePage() {
                                                                 <div
                                                                     key={optIdx}
                                                                     className={`rounded px-3 py-2 text-sm transition ${optIdx === question.correctIndex
-                                                                            ? 'border border-green-500/50 bg-green-500/10 text-green-200'
-                                                                            : 'border border-slate-700/30 bg-slate-700/20 text-slate-300'
+                                                                        ? 'border border-green-500/50 bg-green-500/10 text-green-200'
+                                                                        : 'border border-slate-700/30 bg-slate-700/20 text-slate-300'
                                                                         }`}
                                                                 >
                                                                     <div className="flex items-start gap-2">

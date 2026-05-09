@@ -2,7 +2,6 @@ export const ROUTES = {
     mainMenu: '/',
     profile: '/perfil',
     levelSelect: '/niveles',
-    settings: '/configuracion',
     studyGuide: '/guia',
     gameScene: '/juego/:levelId',
 } as const
