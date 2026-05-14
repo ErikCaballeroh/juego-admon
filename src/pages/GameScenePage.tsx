@@ -172,7 +172,7 @@ export default function GameScenePage() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5, ease: "easeOut" }}
                     >
-                        <h1 className="text-display text-7xl font-bold mb-4 text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.8)] animate-pulse">¡KA-BOOM!</h1>
+                        <h1 className="text-display text-7xl font-bold mb-4 text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.8)] animate-pulse">¡PM-BOOOK!</h1>
                         <p className="text-2xl mb-12 text-rose-200">La bomba ha explotado.</p>
                         <Link to={ROUTES.levelSelect} className="rounded-xl border-2 border-rose-600 bg-rose-800 px-8 py-4 text-xl font-bold text-white transition hover:bg-rose-700 hover:scale-105">Volver al menú</Link>
                     </motion.div>
